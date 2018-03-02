@@ -1,0 +1,36 @@
+influxdb:
+  image: influxdb:latest
+  env_file:
+    - ./influxdb.env
+  volumes:
+    - ./influxdb/:/var/lib/influxdb
+    #- ../../../../../dateneditor-typescript/public/css/:/var/www/html/public/vendor/dateneditor/css
+  ports:
+    - 8086:8086
+
+grafana:
+  image: grafana/grafana
+  env_file:
+    - ./grafana.env
+  links:
+    - influxdb
+  ports:
+    - 3000:3000
+
+telegraf:
+  image: telegraf:latest
+  container_name: telegraf
+  links:
+    - influxdb
+  volumes:
+    - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+  ports:
+    - 8186:8186
+
+# mosquitto:
+#   image: eclipse-mosquitto:latest
+#   ports:
+#     - 1883:1883
+#     - 9001:9001
+#   volumes:
+#     - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
